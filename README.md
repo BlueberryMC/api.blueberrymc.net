@@ -123,6 +123,13 @@ Example response (`/projects/blueberry/version_groups/1.19/builds`):
 ---
 
 ```http request
+PUT /projects/:project/version_groups/:versionGroup/builds/:build
+```
+Creates a new build.
+
+---
+
+```http request
 GET /projects/:project/version_groups/:versionGroup/builds/:buildNumber/download
 ```
 Returns: All downloadable files for a build
