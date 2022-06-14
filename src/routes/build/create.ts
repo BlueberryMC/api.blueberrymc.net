@@ -38,7 +38,7 @@ export default async (req: Request, res: Response) => {
   if (!project) {
     return res.status(404).send({ error: 'project not found' })
   }
-  let versionGroup = await res.locals.getVersionGroup()
+  let versionGroup = await project.findVersionGroupByName(dottedVersionGroup)
   if (!versionGroup) {
     await query('INSERT INTO `version_groups` (`project_id`, `name`, `description`, `experimental`, `branch`) VALUES (?, ?, ?, ?, ?)', project.id, dottedVersionGroup, '', experimental, pBranch)
     versionGroup = await project.findVersionGroupByName(dottedVersionGroup)
