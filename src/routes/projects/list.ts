@@ -1,3 +1,4 @@
+import { w } from '../../util'
 import { Project } from '../../model/project'
 
-export default async (req: Request, res: Response) => res.send({ projects: await Project.getAllProjects() })
+export default w(async (req: Request, res: Response) => res.send({ projects: await Project.getAllProjects() }))

@@ -1,5 +1,5 @@
 import { Octokit } from 'octokit'
-import { toStringOrNull } from '../../util'
+import { toStringOrNull, w } from '../../util'
 import { findAll, findOne, query } from '../../sql'
 
 const VERSION_GROUP_REGEX = /^\d+[._]\d+$/
@@ -11,7 +11,7 @@ const octokit =
     auth: process.env.GITHUB_TOKEN,
   })
 
-export default async (req: Request, res: Response) => {
+export default w(async (req: Request, res: Response) => {
   if (req.headers.authorization !== `Bearer ${process.env.SECRET_KEY}`) {
     return res.status(401).send({ error: 'unauthorized' })
   }
@@ -30,8 +30,8 @@ export default async (req: Request, res: Response) => {
     !VERSION_REGEX.test(pVersion)) {
     return res.status(400).send({ error: 'missing or invalid parameters' })
   }
-  const repo = pRepo.split('/')[0]
-  const owner = pRepo.split('/')[1]
+  const owner = pRepo.split('/')[0]
+  const repo = pRepo.split('/')[1]
   const dottedVersionGroup = pVersionGroup.replace('_', '.')
   const experimental = pBranch !== 'main' && pBranch !== 'master' && !pBranch.startsWith('ver/')
   const project = await res.locals.getProject()
@@ -95,4 +95,4 @@ export default async (req: Request, res: Response) => {
     await query('INSERT INTO `build_changes` (`build_id`, `sha`, `description`) VALUES (?, ?, ?)', buildId, getCommitResult.data.sha, getCommitResult.data.commit.message)
   }
   res.status(200).send({ message: 'accepted' })
-}
+})

@@ -1,4 +1,6 @@
-export default async (req: Request, res: Response) => {
+import { w } from '../../util'
+
+export default w(async (req: Request, res: Response) => {
   const build = await res.locals.getBuild()
   if (!build) {
     return res.status(404).json({ error: 'build not found' })
@@ -13,4 +15,4 @@ export default async (req: Request, res: Response) => {
     }
   }
   return res.status(404).json({ error: 'no downloadable file for type ' + req.params.downloadType })
-}
+})

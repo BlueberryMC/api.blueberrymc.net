@@ -13,6 +13,10 @@ const { router } = require('./routes')
 
 export const app = express()
 
+process.on('unhandledRejection', (reason) => {
+  debug('Caught exception in promise: ', reason)
+})
+
 app.use(logger('dev', {
   stream: {
     write: (s: string) => {
