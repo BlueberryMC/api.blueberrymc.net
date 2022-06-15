@@ -8,7 +8,7 @@ router.use(async (req, res: Response, next) => {
   const versionGroupIdOrName = String(req.params.versionGroup)
   res.locals.getVersionGroup = async () => {
     const projectId = parseInt(versionGroupIdOrName, 10)
-    if (!isNaN(projectId) && projectId > 0 && !String(req.params.versionGroup).includes('.')) {
+    if (!isNaN(projectId) && projectId > 0 && !versionGroupIdOrName.includes('.')) {
       const versionGroup = VersionGroup.findById(projectId)
       if (versionGroup) {
         return versionGroup
