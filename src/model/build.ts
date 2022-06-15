@@ -9,6 +9,7 @@ export class Build {
   public readonly experimental: boolean
   public readonly promoted: boolean
 
+  public readonly version: string | null = null
   public readonly changes: Array<BuildChanges> | null
   public readonly files: Array<BuildFiles> | null
 
@@ -20,6 +21,7 @@ export class Build {
     build_number: number,
     experimental: boolean,
     promoted: boolean,
+    version: string | null = null,
     changes: Array<BuildChanges> | null = null,
     files: Array<BuildFiles> | null = null
   ) {
@@ -28,9 +30,17 @@ export class Build {
     this.build_number = build_number
     this.experimental = experimental
     this.promoted = promoted
+
+    this.version = version
     this.changes = changes
     this.files = files
+
     this.full = changes != null && files != null
+  }
+
+  fetchVersionName(): Promise<string | null> {
+    return findOne('SELECT `name` FROM `versions` WHERE `id` = ? LIMIT 1', this.version_id)
+      .then(res => res !== null ? (res as RawVersion).name : null)
   }
 
   fetchChanges(): Promise<Array<BuildChanges>> {
@@ -45,9 +55,10 @@ export class Build {
     if (this.full) {
       return this
     }
+    const version = await this.fetchVersionName()
     const changes = await this.fetchChanges()
     const files = await this.fetchFiles()
-    return new Build(this.id, this.version_id, this.build_number, this.experimental, this.promoted, changes, files)
+    return new Build(this.id, this.version_id, this.build_number, this.experimental, this.promoted, version, changes, files)
   }
 
   private static convertFromRaw(rawBuild: RawBuild): Build | null {
