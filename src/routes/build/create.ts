@@ -59,8 +59,8 @@ export default w(async (req: Request, res: Response) => {
   if (dupeBuild) {
     return res.status(409).send({ error: 'build already exists' })
   }
-  const veryLongQueryWithSubQueries = 'SELECT `sha` FROM `build_changes` WHERE `build_id` = (SELECT `id` FROM `builds` WHERE `version_id` IN (SELECT `id` FROM `versions` WHERE `version_group_id` = ?) ORDER BY `build_number` DESC LIMIT 1)'
-  const lastCommits = await findAll(veryLongQueryWithSubQueries, versionGroup.id).then(res => res.map(value => value as string))
+  const veryLongQueryWithSubQueries = 'SELECT `sha` FROM `build_changes` WHERE `build_id` = (SELECT `id` FROM `builds` WHERE `version_id` = ? ORDER BY `build_number` DESC LIMIT 1)'
+  const lastCommits = await findAll(veryLongQueryWithSubQueries, version.id).then(res => res.map(value => value as string))
   const buildId = await findOne('INSERT INTO `builds` (`version_id`, `build_number`, `experimental`) VALUES (?, ?, ?)', version.id, buildNumber, experimental) as number
   const handmadeDownloadUrl = `https://github.com/${owner}/${repo}/releases/download/${pVersion}.${buildNumber}/blueberry-${pVersion}.${buildNumber}-installer.jar`
   await query('INSERT INTO `build_files` (`build_id`, `type`, `download_url`) VALUES (?, ?, ?)', buildId, 'universal-installer', handmadeDownloadUrl)
