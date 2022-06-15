@@ -7,7 +7,7 @@ export const router = express.Router({ mergeParams: true })
 
 router.use((req, res: Response, next) => {
   const buildNumber = parseInt(String(req.params.build), 10)
-  if (isNaN(buildNumber) || buildNumber < 0) {
+  if (isNaN(buildNumber) || buildNumber < 0 || String(req.params.build).includes('.')) {
     return res.status(400).json({ error: 'invalid build number' })
   }
   res.locals.getBuild = async (full: boolean = false) => {
