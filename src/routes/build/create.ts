@@ -3,7 +3,6 @@ import { toStringOrNull, w } from '../../util'
 import { findAll, findOne, query } from '../../sql'
 
 const VERSION_GROUP_REGEX = /^\d+[._]\d+$/
-const VERSION_REGEX = /^\d+\.\d+(?:\.\d+)?-\d+\.\d+\.\d+$/
 
 const octokit =
   new Octokit({
@@ -27,7 +26,7 @@ export default w(async (req: Request, res: Response) => {
     !pVersion ||
     !pBranch ||
     !VERSION_GROUP_REGEX.test(pVersionGroup) ||
-    !VERSION_REGEX.test(pVersion)) {
+    pVersion.includes('/')) {
     return res.status(400).send({ error: 'missing or invalid parameters' })
   }
   const owner = pRepo.split('/')[0]
