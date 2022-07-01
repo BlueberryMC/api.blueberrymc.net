@@ -2,6 +2,8 @@ import { Octokit } from 'octokit'
 import { toStringOrNull, w } from '../../util'
 import { findAll, findOne, query } from '../../sql'
 
+const debug = require('debug')('api.blueberrymc.net:routes:build:create')
+
 const VERSION_GROUP_REGEX = /^\d+[._]\d+$/
 
 const octokit =
@@ -89,6 +91,9 @@ export default w(async (req: Request, res: Response) => {
         await query('INSERT INTO `build_changes` (`build_id`, `sha`, `description`) VALUES (?, ?, ?)', buildId, commit.sha, commit.commit.message)
       }
     }
+  } catch (e) {
+    debug(`failed to calculate changes (pCommit: ${pCommit}, lastCommits: ${lastCommits}, owner: ${owner}, repo: ${repo}, version.id: ${version.id})`)
+    throw e
   } finally {
     // try to insert at the end
     await query('INSERT INTO `build_changes` (`build_id`, `sha`, `description`) VALUES (?, ?, ?)', buildId, getCommitResult.data.sha, getCommitResult.data.commit.message)
