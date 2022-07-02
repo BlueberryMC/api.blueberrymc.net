@@ -61,7 +61,7 @@ export default w(async (req: Request, res: Response) => {
     return res.status(409).send({ error: 'build already exists' })
   }
   const veryLongQueryWithSubQueries = 'SELECT `sha` FROM `build_changes` WHERE `build_id` = (SELECT `id` FROM `builds` WHERE `version_id` = ? ORDER BY `build_number` DESC LIMIT 1)'
-  const lastCommits = await findAll(veryLongQueryWithSubQueries, version.id).then(res => res.map(value => value as string))
+  const lastCommits = await findAll(veryLongQueryWithSubQueries, version.id).then(res => res.map(value => value as { sha: string }).map(o => o.sha))
   const buildId = await findOne('INSERT INTO `builds` (`version_id`, `build_number`, `experimental`) VALUES (?, ?, ?)', version.id, buildNumber, experimental) as number
   const handmadeDownloadUrl = `https://github.com/${owner}/${repo}/releases/download/${pVersion}.${buildNumber}/blueberry-${pVersion}.${buildNumber}-installer.jar`
   await query('INSERT INTO `build_files` (`build_id`, `type`, `download_url`) VALUES (?, ?, ?)', buildId, 'universal-installer', handmadeDownloadUrl)
@@ -92,7 +92,7 @@ export default w(async (req: Request, res: Response) => {
       }
     }
   } catch (e) {
-    debug(`failed to calculate changes (pCommit: ${pCommit}, lastCommits: ${lastCommits}, owner: ${owner}, repo: ${repo}, version.id: ${version.id})`)
+    debug(`failed to calculate changes (pCommit: ${pCommit}, lastCommits: ${lastCommits} ([0] = ${lastCommits[0]}), owner: ${owner}, repo: ${repo}, version.id: ${version.id})`)
     throw e
   } finally {
     // try to insert at the end
