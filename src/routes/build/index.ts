@@ -25,7 +25,7 @@ router.use((req, res: Response, next) => {
   next()
 })
 
-router.put('/', createHandler)
+router.put('/new', createHandler)
 
 router.get('/download', downloadListHandler)
 
