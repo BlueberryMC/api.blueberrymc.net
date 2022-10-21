@@ -55,12 +55,8 @@ export class VersionGroup {
     return array.length > 0 ? array[0] : null
   }
 
-  getBuilds(limit?: number): Promise<Array<Build>> {
-    if (typeof limit === 'undefined') {
-      return Build.getByCustomQuery('SELECT * FROM `builds` WHERE `version_id` IN (SELECT `id` FROM `versions` WHERE `version_group_id` = ?)', this.id)
-    } else {
-      return Build.getByCustomQuery('SELECT * FROM `builds` WHERE `version_id` IN (SELECT `id` FROM `versions` WHERE `version_group_id` = ?) LIMIT ?', this.id, limit)
-    }
+  getBuilds(): Promise<Array<Build>> {
+    return Build.getByCustomQuery('SELECT * FROM `builds` WHERE `version_id` IN (SELECT `id` FROM `versions` WHERE `version_group_id` = ?)', this.id)
   }
 
   private static convertFromRaw(rawVersionGroup: RawVersionGroup): VersionGroup | null {

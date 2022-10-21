@@ -1,4 +1,5 @@
 import express from 'express'
+import createHandler from './create'
 import downloadListHandler from './downloadList'
 import downloadFileHandler from './downloadFile'
 
@@ -23,6 +24,8 @@ router.use((req, res: Response, next) => {
   }
   next()
 })
+
+router.put('/', createHandler)
 
 router.get('/download', downloadListHandler)
 
