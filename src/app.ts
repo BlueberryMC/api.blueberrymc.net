@@ -7,15 +7,21 @@ checkDatabaseVersion()
 import path from 'path'
 import express from 'express'
 import logger from 'morgan'
+import cors from 'cors'
 
 const debug = require('debug')('api.blueberrymc.net:app')
-const { router } = require('./routes')
+const { router: v1Router } = require('./routes')
 
 export const app = express()
 
 process.on('unhandledRejection', (reason) => {
   debug('Caught exception in promise: ', reason)
 })
+
+app.use(cors({
+  origin: process.env.APP_URL,
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}))
 
 app.use(logger('dev', {
   stream: {
@@ -35,7 +41,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/', router)
+app.use('/v1', v1Router)
 
 // catch 404
 // noinspection JSUnusedLocalSymbols
