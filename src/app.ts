@@ -19,7 +19,7 @@ process.on('unhandledRejection', (reason) => {
 })
 
 app.use(cors({
-  origin: process.env.APP_URL,
+  origin: RegExp(String(process.env.ORIGIN_URL_REGEX)),
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }))
 
